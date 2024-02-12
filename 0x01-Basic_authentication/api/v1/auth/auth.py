@@ -8,8 +8,18 @@ class Auth():
     """Auth class"""
 
     def require_auth(self, path: str, excluded_paths: List[str]) -> bool:
-        """method that returns False - path and excluded_paths"""
-        return False
+        """returns True if the path is not in
+        the list of strings excluded_paths"""
+        if path is None:
+            return True
+        if path[len(path) - 1] != '/':
+            path += '/'
+        if excluded_paths is None or not excluded_paths:
+            return True
+        if path not in excluded_paths:
+            return True
+        if path in excluded_paths:
+            return False
 
     def authorization_header(self, request=None) -> str:
         """method that returns None - request"""
