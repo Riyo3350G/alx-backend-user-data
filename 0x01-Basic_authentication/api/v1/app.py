@@ -13,11 +13,12 @@ app = Flask(__name__)
 app.register_blueprint(app_views)
 CORS(app, resources={r"/api/v1/*": {"origins": "*"}})
 auth = None
-authn = getenv("AUTH_TYPE")
-if authn:
-    if authn == "auth":
-        from api.v1.auth.auth import Auth
-        auth = Auth()
+
+AUTH_TYPE = getenv("AUTH_TYPE")
+
+if AUTH_TYPE == "auth":
+    from api.v1.auth.auth import Auth
+    auth = Auth()
 
 
 @app.before_request
