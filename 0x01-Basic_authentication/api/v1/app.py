@@ -23,18 +23,25 @@ if AUTH_TYPE == "auth":
 
 @app.before_request
 def before_request():
-    """Before request handler
-    """
+    """Before request handler"""
     if auth is None:
         return
-    excluded_paths = ['/api/v1/status/', '/api/v1/unauthorized/',
+
+    excluded_paths = ['/api/v1/status/',
+                      '/api/v1/unauthorized/',
                       '/api/v1/forbidden/']
-    if not auth.require_auth(request.path, excluded_paths):
-        return
-    if not auth.authorization_header():
-        abort(401)
-    if not auth.current_user():
-        abort(403)
+
+    if request.path not in excluded_paths:
+        # You must use the require_auth method from the auth instance
+        if not auth.require_auth(request.path, excluded_paths):
+            abort(401)
+
+        # You must use the abort method if
+        # authorization_header or current_user returns None
+        if auth.authorization_header(request) is None:
+            abort(401)
+        if auth.current_user(request) is None:
+            abort(403)
 
 
 @app.errorhandler(404)
