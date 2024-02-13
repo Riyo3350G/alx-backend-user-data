@@ -14,6 +14,9 @@ class Auth():
             return True
         if path[len(path) - 1] != '/':
             path += '/'
+        asterick = path + '*'
+        if asterick in excluded_paths:
+            return False
         if excluded_paths is None or not excluded_paths:
             return True
         if path not in excluded_paths:
