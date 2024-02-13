@@ -52,24 +52,18 @@ class BasicAuth(Auth):
                                      ) -> TypeVar('User'):
         """method that returns the User
         instance based on his email and password"""
-        # Return None if user_email or user_pwd is not provided or not a string
-        if user_email is None or not isinstance(user_email, str):
+        if type(user_email) is not str or user_email is None:
             return None
-
-        if user_pwd is None or not isinstance(user_pwd, str):
+        if type(user_pwd) is not str or user_pwd is None:
             return None
-        # Use the search class method of User
-        # to lookup the list of users based on their email
-        users = User.search({'email': user_email})
-
-        # Return None if no user found in the database
-        if not users:
+        try:
+            user = User.search({'email': user_email})
+        except Exception:
             return None
-
-        # Check if user_pwd is the password of the User instance found
-        for user in users:
-            if user.is_valid_password(user_pwd):
-                return user
-
-        # Return None if user_pwd is not the password of any User instance
-        return None
+        if user is None:
+            return None
+        if not user:
+            return None
+        if not user[0].is_valid_password(user_pwd):
+            return None
+        return user[0]
