@@ -34,3 +34,10 @@ class SessionAuth(Auth):
             return False
         del self.user_id_by_session_id[session_id]
         return True
+
+    def current_user(self, request=None):
+        """method that returns a User instance based on a cookie value"""
+        session_id = self.session_cookie(request)
+        user_id = self.user_id_for_session_id(session_id)
+        from models.user import User
+        return User.get(user_id)
