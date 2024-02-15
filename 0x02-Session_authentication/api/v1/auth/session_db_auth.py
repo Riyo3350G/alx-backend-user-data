@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Session DB Authentication Module"""
 from api.v1.auth.session_exp_auth import SessionExpAuth
-from api.v1.auth.session_exp_auth import SessionExpAuth
+from datetime import datetime, timedelta
 from models.user_session import UserSession
 
 
@@ -20,14 +20,18 @@ class SessionDBAuth(SessionExpAuth):
         """method that returns a User ID based on a Session ID"""
         if session_id is None:
             return None
+        UserSession.load_from_file()
         user_session = UserSession.search({"session_id": session_id})
-        if user_session is None:
+        if not user_session:
             return None
+        user_session = user_session[0]
         if self.session_duration <= 0:
             return user_session.user_id
-        if user_session.created_at is None:
+        created_at = user_session.created_at
+        if not created_at:
             return None
-        if (user_session.created_at - self.session_duration) > 0:
+        date_now = datetime.now()
+        if (date_now - created_at) > timedelta(seconds=self.session_duration):
             return None
         return user_session.user_id
 
@@ -38,8 +42,10 @@ class SessionDBAuth(SessionExpAuth):
         session_id = self.session_cookie(request)
         if session_id is None:
             return False
+        UserSession.load_from_file()
         user_session = UserSession.search({"session_id": session_id})
-        if user_session is None:
+        if not user_session:
             return False
+        user_session = user_session[0]
         user_session.remove()
         return True
