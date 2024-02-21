@@ -60,7 +60,7 @@ def profile():
     user = AUTH.get_user_from_session_id(session)
     if user:
         return jsonify({"email": user.email}), 200
-    if user is None:
+    if user is None or session is None:
         abort(403)
 
 
