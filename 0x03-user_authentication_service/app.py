@@ -88,7 +88,8 @@ def update_password():
     try:
         AUTH.update_password(reset_token, new_password)
     except KeyError:
-        abort(403)    
+        abort(403)
+    return jsonify({"email": email, "message": "Password updated"})
 
 
 if __name__ == "__main__":
